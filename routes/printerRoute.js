@@ -1,4 +1,13 @@
 // Author: THAI
+/**
+ * @swagger
+ * /api/hello:
+ *   get:
+ *     summary: Returns a greeting
+ *     responses:
+ *       200:
+ *         description: A greeting message
+ */
 const { Router } = require("express");
 const router = Router();
 const printerController = require("../controllers/printerController")

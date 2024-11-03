@@ -5,6 +5,22 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var multer = require("multer");
 var cors = require("cors");
+// For Swagger
+var swaggerJsDoc = require("swagger-jsdoc");
+var swaggerUI = require("swagger-ui-express");
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "SPSS",
+            version: "1.0.0",
+        },
+    },
+    apis: ["./routes/*.js"], // files containing annotations as above
+};
+
+const openapiSpecification = swaggerJsDoc(swaggerOptions);
+
 var upload = multer();
 var printerRouter = require("./routes/printerRoute");
 var systemConfigRouter = require("./routes/systemConfigRoute");
@@ -14,7 +30,7 @@ var app = express();
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
-
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(openapiSpecification));
 app.use(upload.none()); // parse form-data
 app.use(logger("dev"));
 app.use(express.json());
