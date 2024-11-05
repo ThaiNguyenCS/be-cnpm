@@ -1,9 +1,9 @@
 const logService = require("../services/logService");
 const Log = require("../models/PrintingLog");
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 class LogController {
     async createLog(req, res) {
-        const { studentUserName, printerId, fileId, noOfCopies, a3Quantity, a4Quantity } = req.body;
+        const {studentUserName, printerId, fileId, noOfCopies, a3Quantity, a4Quantity} = req.body;
         try {
             const now = new Date();
             const startPrintTime = now.toISOString();  // Thời gian bắt đầu in
@@ -25,7 +25,7 @@ class LogController {
             await newLog.save();
             res.status(201).json(newLog);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({error: error.message});
         }
     }
     
@@ -49,7 +49,7 @@ class LogController {
                 });
                 res.status(200).json(formattedLogs);
             } else {
-                res.status(404).json({ error: "Logs not found" });
+                res.status(404).json({error: "Logs not found"});
             }
         } catch (error) {
             console.error("Error fetching logs:", error);
@@ -74,11 +74,11 @@ class LogController {
                 }));
                 res.status(200).json(formattedLogs);
             } else {
-                res.status(404).json({ error: "No logs found" });
+                res.status(404).json({error: "No logs found"});
             }
         } catch (error) {
             console.error("Error fetching logs:", error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({error: error.message});
         }
     }
     async getLogsByTime(req, res) {
@@ -97,11 +97,11 @@ class LogController {
                 }));
                 res.status(200).json(formattedLogs);
             } else {
-                res.status(404).json({ error: "No logs found" });
+                res.status(404).json({error: "No logs found"});
             }
         } catch (error) {
             console.error("Error fetching logs:", error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({error: error.message});
         }
     }
     
@@ -109,21 +109,26 @@ class LogController {
 
     async updateLog(req, res) {
         const {id} = req.params;
-        const updates = req.body;
-
+        const {endTime} = req.query;
         try {
-            const updatedLog = await logService.updateLog(id, updates);
+            if (!endTime) {
+                return res.status(400).json({error: "endTime is required"});
+            }
+    
+            const updatedLog = await logService.updateLog(id, new Date(endTime));
             res.status(200).json(updatedLog);
         } catch (error) {
             console.error("Update error:", error);
-
+    
             if (error.message === "Log not found") {
                 return res.status(404).json({error: error.message});
             }
-
+    
             res.status(500).json({error: error.message});
         }
     }
+    
+    
 
 }
 

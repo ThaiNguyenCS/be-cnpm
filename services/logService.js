@@ -58,13 +58,16 @@ class LogService {
     
     
 
-    async updateLog(id, updates) {
+    async updateLog(id, endTime) {
         const log = await PrintingLog.findByPk(id);
+        // console.log("Updating log with id:", id);
         if (!log) {
+            console.error(`Log with id ${id} not found`);
             throw new Error("Log not found");
         }
-        return await log.update(updates);
+        return await log.update({finishTime: endTime});
     }
+    
 }
 
 module.exports = new LogService();
