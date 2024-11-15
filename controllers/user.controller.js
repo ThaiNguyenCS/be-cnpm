@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const { v4: uuidv4 } = require("uuid");
-
+const sendMail = require('../utils/sendMail.js');
 dotenv.config();
 
 const COOKIE_OPTION = {
@@ -137,9 +137,46 @@ const logout = (req, res) => {
     res.status(200).json({ message: "Đăng xuất thành công!" });
 };
 
+const forgetPassword = async (req, res) => {
+  if (!req.body.email) {
+    res.json({
+      "code": "error",
+      "msg": "Vui lòng điền email của bạn."
+    });
+    return;
+  }
+
+  try {
+    const user = await User.findOne({ where: { email: req.body.email } });
+
+    if (!user) {
+      res.json({
+        "code": "error", "msg": "Email không tồn tại."
+      });
+      return;
+    }
+
+    const subject = "Khôi phục mật khẩu";
+    const text = `${user.password}`;
+    await sendMail(req.body.email, subject, text);
+
+    res.json({
+      "code": "success",
+      "msg": "Đã gửi mật khẩu thành công"
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.json({
+      "code": "error",
+      "msg": "Có lỗi xảy ra, vui lòng thử lại sau."
+    });
+  }
+};
+
 module.exports = {
     register,
     login,
     getUser,
     logout,
+    forgetPassword,
 };
